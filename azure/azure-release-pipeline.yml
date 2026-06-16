@@ -30,7 +30,8 @@ extends:
     service_name: ${{ variables.service_name }} 
     short_service_name: ${{ variables.short_service_name }} 
     service_base_path: ${{ variables.service_base_path }}
-    prod_producer_approval: true
+    prod_requires_approval: false
+    manual_approval_env: ${{ variables.service_name }}
     apigee_deployments:
       - environment: internal-dev
         post_deploy:
@@ -40,6 +41,10 @@ extends:
       - environment: int
         depends_on:
           - internal_dev
-      - environment: prod
+      - environment: manual-approval
+        stage_name: prod_approval
         depends_on:
           - int
+      - environment: prod
+        depends_on:
+          - prod_approval
